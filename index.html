@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Задание 3</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="index.css">
+</head>
+
+<body>
+    <div id="game">
+        <!-- создаем внешний квадрат, куда поместим 16 маленьких квадратов -->
+
+        <div class="outerblock" onclick="setColor(this)">
+            <!-- создаем внешний блок маленьких квадратов.
+        Повесим туда событие onclick, а также прочертим borders, чтобы впоследствии они оставались неизменными -->
+            <div class="block"></div>
+            <!-- далее по списку создаем внутренний блок для каждого из 16-ти квадратов, который потом
+            будет видимым или невидимым, согласно условиям игры -->
+        </div>
+        <div class="outerblock" onclick="setColor(this)">
+            <div class="block"></div>
+        </div>
+        <div class="outerblock" onclick="setColor(this)">
+            <div class="block"></div>
+        </div>
+        <div class="outerblock" onclick="setColor(this)">
+            <div class="block"></div>
+        </div>
+        <div class="outerblock" onclick="setColor(this)">
+            <div class="block"></div>
+        </div>
+        <div class="outerblock" onclick="setColor(this)">
+            <div class="block"></div>
+        </div>
+        <div class="outerblock" onclick="setColor(this)">
+            <div class="block"></div>
+        </div>
+        <div class="outerblock" onclick="setColor(this)">
+            <div class="block"></div>
+        </div>
+        <div class="outerblock" onclick="setColor(this)">
+            <div class="block"></div>
+        </div>
+        <div class="outerblock" onclick="setColor(this)">
+            <div class="block"></div>
+        </div>
+        <div class="outerblock" onclick="setColor(this)">
+            <div class="block"></div>
+        </div>
+        <div class="outerblock" onclick="setColor(this)">
+            <div class="block"></div>
+        </div>
+        <div class="outerblock" onclick="setColor(this)">
+            <div class="block"></div>
+        </div>
+        <div class="outerblock" onclick="setColor(this)">
+            <div class="block"></div>
+        </div>
+        <div class="outerblock" onclick="setColor(this)">
+            <div class="block"></div>
+        </div>
+        <div class="outerblock" onclick="setColor(this)">
+            <div class="block"></div>
+        </div>
+    </div>
+
+    <!--Создадим форму для таймера-->
+    <form name=MyForm>
+        <input type=button id="but" style="width:75px" value="Старт" onclick="Start()">
+        <br>
+        <br>
+        <input name=stopwatch id="watch" style="width:75px" size=10 value="00:00:000">
+    </form>
+
+    <script>
+        function getRandomInt(min, max) { // функция случайного целого числа
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+        window.onload = function () { // при загрузке каждому из 16-блоков случайным образом присваивается цвет background
+            var letters = ["green", "red", "blue", "brown", "yellow", "orange", "aqua", "purple",
+                "green", "red", "blue", "brown", "yellow", "orange", "aqua", "purple"];
+            for (var i = 0; i < 16; i++) {
+                Random = getRandomInt(0, letters.length);
+                color = letters[Random];
+                letters.splice(Random, 1);
+                document.getElementsByClassName('block')[i].style.background = color;
+                document.getElementsByClassName("block")[i].style.visibility = "hidden"; //в каждом блоке присвоенный цвет 
+                // background остается скрытым
+            }
+        }
+
+        clicked = [];
+        var temp;
+        var count = 0;
+        function setColor(elem) { // нажимая на блок , тот показывает присвоенный ему выше цвет
+            elem.children[0].style.visibility = "visible";
+            clicked.push(elem.children[0].style.background);
+            if (clicked.length == 1)
+                temp = elem.children[0];
+
+            if (clicked.length > 1) {   // в случае , если нажимается второй блок , то если у них одинаковый 
+                if (clicked[0] == clicked[1]) {  //  присвоенный цвет, то оба блока становятся видимыми (бэкграунд)
+                    elem.children[0].style.visibility = "visible";
+                    clicked.splice(0, 2);
+                    count += 1;
+                    if (count == 8) {    // если все 16 квадратов стали видимыми - остановить таймер
+                        clearTimeout(clocktimer);
+                        init = 0;
+                        setTimeout(function () { alert(document.getElementById('watch').value) }, 500) // вывести на экран
+                    } // затраченное на игру время
+                }
+                else {
+                    setTimeout(function func() { // если первый квадрат и второй не совпадают цветами, то оба становятся
+                        if (clicked[0] !== clicked[1]) { // невидимыми
+                            clicked.splice(0, 2);
+                            elem.children[0].style.visibility = "hidden ";
+                            temp.style.visibility = "hidden";
+                        }
+                    }, 1000);
+                }
+            }
+        }
+        //объявляем переменные для таймера
+        var base = 60;
+        var clocktimer, dateObj, dh, dm, ds, ms;
+        var readout = '';
+        var m = 1, tm = 1, s = 0, ts = 0, ms = 0, init = 0;
+
+        //функция для старта таймера
+        function StartTIME() {
+            var cdateObj = new Date();
+            var t = (cdateObj.getTime() - dateObj.getTime()) - (s * 1000);
+            if (t > 999) { s++; }
+            if (s >= (m * base)) {
+                ts = 0;
+                m++;
+            } else {
+                ts = parseInt((ms / 1000) + s);
+                if (ts >= base) { ts = ts - ((m - 1) * base); }
+            }
+            tm = parseInt((ms / 1000) + m);
+            ms = Math.round(t);
+            if (ms > 999) { ms = 0; }
+            if (ms > 99 && ms <= 999) { ms = ms; }
+            if (ms > 9 && ms <= 99) { ms = '0' + ms; }
+            if (ms == 0) { ms = '000'; }
+            if (ms > 0 && ms <= 9) { ms = '00' + ms; }
+            if (ts > 0) { ds = ts; if (ts < 10) { ds = '0' + ts; } } else { ds = '00'; }
+            dm = tm - 1;
+            if (dm > 0) { if (dm < 10) { dm = '0' + dm; } } else { dm = '00'; }
+            readout = dm + ':' + ds + '.' + ms;
+            document.MyForm.stopwatch.value = readout;
+            clocktimer = setTimeout("StartTIME()", 1);
+        }
+
+        //Функция запуска таймера, которая навешивается непосредственно на кнопку "Cтарт"
+        function Start() {
+            if (init == 0) {
+                dateObj = new Date();
+                StartTIME();
+                init = 1;
+            }
+        }
+    </script>
+</body>
+
+</html>
